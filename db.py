@@ -31,7 +31,6 @@ def init_db():
 
 @click.command('init-db')
 def init_db_command():
-    print("🔥 BANCO SENDO CRIADO")
     init_db()
     click.echo('Initialized the database.')
 
