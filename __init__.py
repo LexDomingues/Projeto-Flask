@@ -2,13 +2,29 @@ import os
 
 from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy as sa
 from sqlalchemy.orm import DeclarativeBase
 import click
+from sqlalchemy.orm import Mapped, mapped_column
+import datetime
 
 class Base(DeclarativeBase):
-  pass
+    pass
 
 db = SQLAlchemy(model_class=Base)
+
+class User(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(unique=True)
+    email: Mapped[str]
+
+
+class Post(db.Model):
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(sa.String, nullable=False)
+    created: Mapped[datetime] = mapped_column(sa.DateTime, default=sa.func.now())
+    author_id: Mapped[int] = mapped_column(sa.ForeignKey("user.id"))
+
 
 @click.command('init-db')
 def init_db_command():
