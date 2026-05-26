@@ -1,11 +1,46 @@
-Códigos do flask documentation alterados para meu projeto
+Este projeto foi desenvolvido utilizando Python e Flask com o objetivo de praticar conceitos importantes de desenvolvimento backend, como:
 
-O código possui as operações CRUD
+*CRUD de usuários
 
-O método POST adiciona novos usuários para meu banco de dados
+*Autenticação com JWT
 
-O método GEST mostra todos os usuários que estão no meu Banco de Dados
+*Autorização por níveis de acesso (roles)
 
-O método DELETE apaga o usuário do meu banco de dados
+*Relacionamentos com SQLAlchemy
 
-Dá para pesquisar o usuário pelo id
+*Migrations com Flask-Migrate
+
+*Testes automatizados com Pytest
+
+*Estruturação de API REST
+
+
+O sistema possui autenticação baseada em token e controle de permissões, permitindo diferenciar usuários administradores de usuários comuns.
+
+# Autenticação JWT
+
+## Login
+
+POST /auth/login
+
+### Body
+
+{
+
+  "username": "admin",
+
+  "password": "123"
+
+}
+
+### Resposta
+
+{
+
+  "access_token": "TOKEN"
+
+}
+
+## Usando o Token
+
+Authorization: Bearer TOKEN
