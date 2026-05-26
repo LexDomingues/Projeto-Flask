@@ -1,6 +1,8 @@
+from ..controllers .utils import requires_role
 from flask import Blueprint, Flask, request
 from http import HTTPStatus
 
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy import column, inspect
 from ..models import db, User
 
@@ -18,7 +20,8 @@ def _create_user():
 
     user = User(
         username=data["username"],
-        email=data.get("email")  # evita erro
+        password=data["password"],
+        role_id=data["role_id"], 
     )
 
     db.session.add(user)
@@ -29,23 +32,34 @@ def _create_user():
 def _list_users():
     query = db.select(User)
     users = db.session.execute(query).scalars()
-    return [{"id": user.id, "username": user.username, "email": user.email} for user in users]
+    return [
+        {
+            "id": user.id,
+            "username": user.username,
+            "role":{
+                "id": user.role.id,
+                "name": user.role.name,
+            },
+        }
+          for user in users
+          ]
 
 @app.route("/", methods=["GET", "POST"])
-def handle_user():
+@jwt_required()
+@requires_role("admin") 
+def list_or_create_user():
+    requires_role("admin")
     if request.method == "POST":
-        error = _create_user()
-        if error:
-            return error
-        return {"message": "User created successfully"}, HTTPStatus.CREATED
+         _create_user()
+         return {"message": "User created successfully"}, HTTPStatus.CREATED
     else:
         return {"users": _list_users()}
-    
+
 # READ
 @app.route("/<int:user_id>")
 def get_user(user_id):
     user = db.get_or_404(User, user_id)
-    return {"id": user.id, "username":user.username, "email": user.email}
+    return {"id": user.id, "username":user.username}
 
 
 @app.route("/<int:user_id>", methods=["PATCH"])
@@ -59,7 +73,7 @@ def update_user(user_id):
             setattr(user, column.key, data[column.key])
     db.session.commit()
 
-    return {"id": user.id, "username":user.username, "email": user.email}
+    return {"id": user.id, "username":user.username, "password": user.password}
 
 #DELETE
 @app.route("/<int:user_id>", methods=["DELETE"])
