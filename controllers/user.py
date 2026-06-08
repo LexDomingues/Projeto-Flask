@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy import column, inspect
-from ..models import db, User
+from .models import db, User
 
 app = Blueprint("user", __name__, url_prefix="/users")
 

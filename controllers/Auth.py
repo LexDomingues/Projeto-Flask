@@ -2,7 +2,7 @@ from flask import Blueprint, Flask, jsonify, request
 from http import HTTPStatus
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
-from ..models import db, User
+from .models import db, User
 
 app = Blueprint("auth", __name__, url_prefix="/auth")
 

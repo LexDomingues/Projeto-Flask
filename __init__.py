@@ -7,7 +7,7 @@ from sqlalchemy.orm import DeclarativeBase
 import click
 from sqlalchemy.orm import Mapped, mapped_column
 import datetime
-from .models import db, User, Post
+from .controllers.models import db, User, Post
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 
@@ -24,7 +24,7 @@ class Base(DeclarativeBase):
 @click.command('init-db')
 def init_db_command():
     with current_app.app_context():
-        from . import models 
+        from .controllers import models 
         models.db.create_all()
         click.echo('Banco de dados inicializado com sucesso (Tabelas: User, Post).')
 
@@ -33,11 +33,10 @@ import os
 def create_app(test_config=None):
     app = Flask(__name__)
 
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(BASE_DIR, 'teste_.sqlite'),
+        SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"],
         JWT_SECRET_KEY = "super-secret",
     ) 
 
@@ -53,7 +52,7 @@ def create_app(test_config=None):
     # Inicializa o JWT
     jwt.init_app(app)
     #  importa models (registra tabelas)
-    from . import models
+    from .controllers import models
 
     # registra comando DEPOIS
     app.cli.add_command(init_db_command)
